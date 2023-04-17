@@ -1,7 +1,8 @@
 public enum Operator {
     PLUS,
     MINUS,
+    MULTIPLY,
     DIVIDE,
     PARENTHESES_OPENING,
-    PARENTHESIS_CLOSING
+    PARENTHESES_CLOSING
 }

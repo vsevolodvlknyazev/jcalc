@@ -1,5 +1,47 @@
+import java.util.Scanner;
+
 public class Main {
+    private static void printHelp() {
+        System.out.println(
+                "options: help, quit; available operators: + - * / ( )");
+    }
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        printHelp();
+        while (true) {
+            System.out.print(">> "); // prompt
+            input = scanner.nextLine();
+            // remove all whitespaces and tabs
+            input = input.replaceAll("\\s", "");
+
+            if (input.isEmpty()) {
+                continue;
+            }
+            if (input.equals("help")) {
+                printHelp();
+                continue;
+            }
+            if (input.equals("quit")) {
+                break;
+            }
+
+            try {
+                Lexer lexer = new Lexer(input);
+                double result = Parser.parseAndEvaluate(lexer);
+
+                System.out.print("== ");
+                if (result % 1.0 != 0) { // decimal
+                    System.out.println(result);
+                }
+                else { // not decimal, round up
+                    System.out.printf("%.0f\n", result);
+                }
+            }
+            catch (Lexer.SemanticException | Parser.SyntaxException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }

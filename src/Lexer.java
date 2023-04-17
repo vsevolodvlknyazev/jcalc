@@ -13,8 +13,6 @@ public class Lexer {
     private Operator tokenOperatorValue;
 
     public Lexer(String input) throws SemanticException {
-        // remove all whitespaces and tabs
-        input = input.replaceAll("\\s", "");
         scanner = new Scanner(input);
 
         // scanner should split the input into multiple tokens

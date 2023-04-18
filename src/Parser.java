@@ -1,14 +1,15 @@
 /*  Using the recursive decent parser algorithm
     Grammar:
-    E - expression, T - term F - factor, U - Unary expression, G - group, e - nil
+    E - expression, T - term F - factor, U - Unary expression, G - group, S - super group e - nil
 
     E  -> TE'
     E' -> +TE' | -TE' | e
     T  -> UT'
     T' -> *UT' | /UT' | %T' | e
-    U  -> -F | F
+    U  -> -F | +F | F
     F  -> double | G
-    G -> sqrt(E) | lg(E) | fact(E) | pow(E,E) | log(E,E)
+    G  -> (E) | sqrt(E) | lg(E) | fact(E) | A
+    S  -> pow(E,E) | log(E,E)
 */
 
 public abstract class Parser {
@@ -37,6 +38,12 @@ public abstract class Parser {
     private static class SecondParameterExpectedException extends SyntaxException {
         public SecondParameterExpectedException() {
             super("second parameter expected");
+        }
+    }
+
+    private static class ParenthesizedEquationExpectedException extends SyntaxException {
+        public ParenthesizedEquationExpectedException() {
+            super("parenthesized equation expected");
         }
     }
 
@@ -145,21 +152,26 @@ public abstract class Parser {
 
     private static double parseU(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
         if (lexer.match(Operator.PLUS,Operator.MINUS)) {
+            // U -> -F | +F
+
             // make the first number zero to evaluate unary expression, e.g.:
             // (-1) -> 0 - 1 = -1; (+1) -> 0 + 1 = 1
             return evaluate(lexer.popOperator(), 0, parseF(lexer));
         }
         else {
+            // U -> F
             return parseF(lexer);
         }
     }
 
     private static double parseF(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
         if (lexer.matchIfNumber()) {
+            // F -> double
             return lexer.popNumber();
         }
         else if (lexer.match(Operator.PARENTHESES_OPENING, Operator.SQRT, Operator.LG, Operator.FACT,
                 Operator.POW, Operator.LOG )) {
+            // F -> G
             return parseG(lexer);
         }
         else {
@@ -167,36 +179,29 @@ public abstract class Parser {
         }
     }
 
-    private static double parseG(Lexer lexer) throws SyntaxException, Lexer.SemanticException {
+    private static double parseG(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
         if (lexer.match(Operator.PARENTHESES_OPENING)) {
+            // G -> (E)
             return parseEParenthesized(lexer);
         }
-        // functions with 1 parameter
         else if (lexer.match(Operator.SQRT, Operator.LG,Operator.FACT)) {
-            return evaluate(lexer.popOperator(), parseEParenthesized(lexer));
-        }
-        else { // functions with 2 parameters (pow, log)
+            // G -> sqrt(E) | lg(E) | fact(E)
             Operator operator = lexer.popOperator();
-            lexer.popOperator(); // skip the opening bracket
-            double first = parseE(lexer);
-            if (lexer.match(Operator.COMMA)) {
-                lexer.popOperator(); // skip the comma
-                double second = parseE(lexer);
-                if (lexer.match(Operator.PARENTHESES_CLOSING)) {
-                    lexer.popOperator();
-                    return evaluate(operator, first, second);
-                }
-                else {
-                    throw new UnclosedParenthesisException();
-                }
+            if (lexer.match(Operator.PARENTHESES_OPENING)) {
+                return evaluate(operator, parseEParenthesized(lexer));
             }
             else {
-                throw new SecondParameterExpectedException();
+                throw new ParenthesizedEquationExpectedException();
             }
+        }
+        else {
+            // G -> S
+            return parseS(lexer);
         }
     }
 
     private static double parseEParenthesized(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+        // (E)
         lexer.popOperator(); // skip the opening bracket
         double e = parseE(lexer);
         if (lexer.match(Operator.PARENTHESES_CLOSING)) {
@@ -205,6 +210,30 @@ public abstract class Parser {
         }
         else {
             throw new UnclosedParenthesisException();
+        }
+    }
+
+    private static double parseS(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+        // S -> pow(E,E) | log(E,E)
+        Operator operator = lexer.popOperator();
+        if (lexer.match(Operator.PARENTHESES_OPENING)) {
+            lexer.popOperator(); // skip the opening bracket
+            double first = parseE(lexer);
+            if (lexer.match(Operator.COMMA)) {
+                lexer.popOperator(); // skip the comma
+                double second = parseE(lexer);
+                if (lexer.match(Operator.PARENTHESES_CLOSING)) {
+                    lexer.popOperator();
+                    return evaluate(operator, first, second);
+                } else {
+                    throw new UnclosedParenthesisException();
+                }
+            } else {
+                throw new SecondParameterExpectedException();
+            }
+        }
+        else {
+            throw new ParenthesizedEquationExpectedException();
         }
     }
 

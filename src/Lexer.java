@@ -47,14 +47,12 @@ public class Lexer {
 
     public double popNumber() throws SemanticException {
         double number = tokenNumberValue;
-        System.out.println("pop "+number);
         advance();
         return number;
     }
 
     public Operator popOperator() throws SemanticException {
         Operator operator = tokenOperatorValue;
-        System.out.println("operator "+operator);
         advance();
         return operator;
     }

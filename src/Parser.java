@@ -1,13 +1,15 @@
 /*  Using the recursive decent parser algorithm
     Grammar:
-    E - expression, T - term F - factor, U - Unary expression, e - nil
+    E - expression, T - term F - factor, U - Unary expression, G - group, A - advanced group, e - nil
 
     E  -> TE'
     E' -> +TE' | -TE' | e
     T  -> UT'
     T' -> *UT' | /UT' | %T' | e
     U  -> -F | F
-    F  -> double | (E)
+    F  -> double | G
+    G -> (E) | sqrt(E) | lg(E) | fact(E) | A
+    A -> pow(E,E) | log(E,E)
 */
 
 public abstract class Parser {

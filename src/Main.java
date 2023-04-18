@@ -4,6 +4,7 @@ public class Main {
     private static void printHelp() {
         System.out.println(
                 "options: help, quit; available operators: + - * / ( )");
+        System.out.println("functions: sqrt(x), lg(x), fact(int), pow(base,power), log(base, exponent)");
     }
 
     public static void main(String[] args) {

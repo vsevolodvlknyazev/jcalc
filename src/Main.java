@@ -15,6 +15,7 @@ public class Main {
             input = scanner.nextLine();
             // remove all whitespaces and tabs
             input = input.replaceAll("\\s", "");
+            input = input.toLowerCase();
 
             if (input.isEmpty()) {
                 continue;

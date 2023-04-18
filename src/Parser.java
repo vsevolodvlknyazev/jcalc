@@ -163,11 +163,11 @@ public abstract class Parser {
 
     private static double evaluate(Operator operator, double first, double second) {
         switch (operator) {
-            case PLUS -> { return first+second; }
-            case MINUS -> { return first-second; }
-            case MULTIPLY -> { return first*second; }
-            case DIVIDE -> { return first/second; }
-            case REMAINDER -> { return first%second; }
+            case PLUS -> { return first + second; }
+            case MINUS -> { return first - second; }
+            case MULTIPLY -> { return first * second; }
+            case DIVIDE -> { return first / second; }
+            case REMAINDER -> { return first % second; }
         }
         return -1; // impossible
     }

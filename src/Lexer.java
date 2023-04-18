@@ -23,7 +23,7 @@ public class Lexer {
         final String charBeforeDigit = "(?<=[^\\d.])(?=\\d)";
         final String digitBeforeChar = "(?<=\\d)(?=[^\\d.])";
         // break expressions like '...+(sqrt...' into '+', '('
-        final String singleCharOperator = "(?<=[+\\-*/()])|(?=[+\\-*/()])";
+        final String singleCharOperator = "(?<=[+\\-*/(),])|(?=[+\\-*/(),])";
         final String regex = charBeforeDigit+'|'+digitBeforeChar+'|'+singleCharOperator;
         scanner.useDelimiter(regex);
 

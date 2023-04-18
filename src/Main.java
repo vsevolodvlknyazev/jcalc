@@ -41,7 +41,7 @@ public class Main {
                 }
             }
             catch (Lexer.SemanticException | Parser.SyntaxException e) {
-                System.out.println(e.getMessage());
+                System.out.println("!! "+e.getMessage());
             }
         }
     }

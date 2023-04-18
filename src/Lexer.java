@@ -22,9 +22,9 @@ public class Lexer {
         // non-digit is [^\\d.] and not \\D because of the decimal numbers
         final String charBeforeDigit = "(?<=[^\\d.])(?=\\d)";
         final String digitBeforeChar = "(?<=\\d)(?=[^\\d.])";
-        // break expressions like '...+(...' into '+', '('
-        final String parenthesis = "(?<=[()])|(?=[()])";
-        final String regex = charBeforeDigit+'|'+digitBeforeChar+'|'+parenthesis;
+        // break expressions like '...+(sqrt...' into '+', '('
+        final String singleCharOperator = "(?<=[+\\-*/()])|(?=[+\\-*/()])";
+        final String regex = charBeforeDigit+'|'+digitBeforeChar+'|'+singleCharOperator;
         scanner.useDelimiter(regex);
 
         advance();
@@ -90,8 +90,14 @@ public class Lexer {
             case "-" -> { return Operator.MINUS; }
             case "*" -> { return Operator.MULTIPLY; }
             case "/" -> { return Operator.DIVIDE; }
+            case "%" -> { return Operator.REMAINDER; }
             case "(" -> { return Operator.PARENTHESES_OPENING; }
             case ")" -> { return Operator.PARENTHESES_CLOSING; }
+            case "sqrt" -> { return Operator.SQRT; }
+            case "lg" -> { return Operator.LG; }
+            case "fact" -> { return Operator.FACT; }
+            case "pow" -> { return Operator.POW; }
+            case "log" -> { return Operator.LOG; }
             default -> throw new SemanticException(input);
         }
     }

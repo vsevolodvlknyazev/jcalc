@@ -1,6 +1,6 @@
 /*  Using the recursive decent parser algorithm
     Grammar:
-    E - expression, T - term F - factor, U - Unary expression, G - group, A - advanced group, e - nil
+    E - expression, T - term F - factor, U - Unary expression, G - group, e - nil
 
     E  -> TE'
     E' -> +TE' | -TE' | e
@@ -8,8 +8,7 @@
     T' -> *UT' | /UT' | %T' | e
     U  -> -F | F
     F  -> double | G
-    G -> (E) | sqrt(E) | lg(E) | fact(E) | A
-    A -> pow(E,E) | log(E,E)
+    G -> sqrt(E) | lg(E) | fact(E) | pow(E,E) | log(E,E)
 */
 
 public abstract class Parser {
@@ -32,6 +31,12 @@ public abstract class Parser {
     private static class UnclosedParenthesisException extends SyntaxException {
         public UnclosedParenthesisException() {
             super("unclosed parenthesis");
+        }
+    }
+
+    private static class SecondParameterExpectedException extends SyntaxException {
+        public SecondParameterExpectedException() {
+            super("second parameter expected");
         }
     }
 
@@ -147,20 +152,63 @@ public abstract class Parser {
         if (lexer.matchIfNumber()) {
             return lexer.popNumber();
         }
-        else if (lexer.match(Operator.PARENTHESES_OPENING)) {
-            lexer.popOperator();
-            double e = parseE(lexer);
-            if (lexer.match(Operator.PARENTHESES_CLOSING)) {
-                lexer.popOperator();
-                return e;
-            }
-            else {
-                throw new UnclosedParenthesisException();
-            }
+        else if (lexer.match(Operator.PARENTHESES_OPENING, Operator.SQRT, Operator.LG, Operator.FACT,
+                Operator.POW, Operator.LOG )) {
+            return parseG(lexer);
         }
         else {
             throw new NumberExpectedException();
         }
+    }
+
+    private static double parseG(Lexer lexer) throws SyntaxException, Lexer.SemanticException {
+        if (lexer.match(Operator.PARENTHESES_OPENING)) {
+            return parseEParenthesized(lexer);
+        }
+        // functions with 1 parameter
+        else if (lexer.match(Operator.SQRT, Operator.LG,Operator.FACT)) {
+            return evaluate(lexer.popOperator(), parseEParenthesized(lexer));
+        }
+        else { // functions with 2 parameters (pow, log)
+            Operator operator = lexer.popOperator();
+            lexer.popOperator(); // skip the opening bracket
+            double first = parseE(lexer);
+            if (lexer.match(Operator.COMMA)) {
+                lexer.popOperator(); // skip the comma
+                double second = parseE(lexer);
+                if (lexer.match(Operator.PARENTHESES_CLOSING)) {
+                    lexer.popOperator();
+                    return evaluate(operator, first, second);
+                }
+                else {
+                    throw new UnclosedParenthesisException();
+                }
+            }
+            else {
+                throw new SecondParameterExpectedException();
+            }
+        }
+    }
+
+    private static double parseEParenthesized(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+        lexer.popOperator(); // skip the opening bracket
+        double e = parseE(lexer);
+        if (lexer.match(Operator.PARENTHESES_CLOSING)) {
+            lexer.popOperator();
+            return e;
+        }
+        else {
+            throw new UnclosedParenthesisException();
+        }
+    }
+
+    private static double evaluate(Operator operator, double number) throws SyntaxException {
+        switch (operator) {
+            case SQRT -> { return Math.sqrt(number); }
+            case LG -> { return Math.log10(number); }
+            case FACT -> throw new SyntaxException("Not implemented yet");
+        }
+        return -1; // impossible
     }
 
     private static double evaluate(Operator operator, double first, double second) {
@@ -170,6 +218,8 @@ public abstract class Parser {
             case MULTIPLY -> { return first * second; }
             case DIVIDE -> { return first / second; }
             case REMAINDER -> { return first % second; }
+            case POW -> { return Math.pow(first, second); }
+            case LOG -> { return Math.log(second) / Math.log(first); }
         }
         return -1; // impossible
     }

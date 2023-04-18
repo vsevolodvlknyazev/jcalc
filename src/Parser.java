@@ -40,6 +40,12 @@ public abstract class Parser {
         }
     }
 
+    private static class IntegerExpectedException extends SyntaxException {
+        public IntegerExpectedException() {
+            super("integer expected");
+        }
+    }
+
         /* EXAMPLE:
         parse an expression "2+3"
         shortened parse tree (some nodes are numbered to avoid confusion):
@@ -206,7 +212,7 @@ public abstract class Parser {
         switch (operator) {
             case SQRT -> { return Math.sqrt(number); }
             case LG -> { return Math.log10(number); }
-            case FACT -> throw new SyntaxException("Not implemented yet");
+            case FACT -> { return factorial(number); }
         }
         return -1; // impossible
     }
@@ -222,5 +228,17 @@ public abstract class Parser {
             case LOG -> { return Math.log(second) / Math.log(first); }
         }
         return -1; // impossible
+    }
+
+    private static double factorial(double number) throws SyntaxException {
+        if (number % 1.0 != 0) { // decimal
+            throw new IntegerExpectedException();
+        }
+        int integerNumber = (int)number;
+        int result = 1;
+        for (int i = 2; i <= integerNumber; i++) {
+            result *= i;
+        }
+        return result;
     }
 }

@@ -5,7 +5,7 @@
     E  -> TE'
     E' -> +TE' | -TE' | e
     T  -> UT'
-    T' -> *UT' | /UT' | e
+    T' -> *UT' | /UT' | %T' | e
     U  -> -F | F
     F  -> double | (E)
 */
@@ -116,8 +116,8 @@ public abstract class Parser {
     }
 
     private static double parseTPrime(Lexer lexer, double siblingU) throws Lexer.SemanticException, SyntaxException {
-        if (lexer.match(Operator.MULTIPLY, Operator.DIVIDE)) {
-            // T' -> *UT' | /*UT'
+        if (lexer.match(Operator.MULTIPLY, Operator.DIVIDE, Operator.REMAINDER)) {
+            // T' -> *UT' | /*UT' | %UT'
             Operator operator = lexer.popOperator();
             double u = parseU(lexer);
             siblingU = evaluate(operator, siblingU, u);
@@ -167,6 +167,7 @@ public abstract class Parser {
             case MINUS -> { return first-second; }
             case MULTIPLY -> { return first*second; }
             case DIVIDE -> { return first/second; }
+            case REMAINDER -> { return first%second; }
         }
         return -1; // impossible
     }

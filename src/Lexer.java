@@ -89,6 +89,7 @@ public class Lexer {
             case "%" -> { return Operator.REMAINDER; }
             case "(" -> { return Operator.PARENTHESES_OPENING; }
             case ")" -> { return Operator.PARENTHESES_CLOSING; }
+            case "," -> { return Operator.COMMA; }
             case "sqrt" -> { return Operator.SQRT; }
             case "lg" -> { return Operator.LG; }
             case "fact" -> { return Operator.FACT; }

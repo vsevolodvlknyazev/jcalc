@@ -11,6 +11,7 @@ public enum Operator {
     // G and A
     PARENTHESES_OPENING,
     PARENTHESES_CLOSING,
+    COMMA,
 
     // G
     SQRT,

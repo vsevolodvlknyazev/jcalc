@@ -13,7 +13,7 @@
 */
 
 public abstract class Parser {
-    public static double parseAndEvaluate(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    public static double parseAndEvaluate(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         return parseE(lexer);
     }
 
@@ -108,13 +108,13 @@ public abstract class Parser {
         parseE(lexer) returns 5
      */
 
-    private static double parseE(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseE(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         // E -> TE'
         double t = parseT(lexer);
         return parseEPrime(lexer, t);
     }
 
-    private static double parseEPrime(Lexer lexer, double siblingT) throws Lexer.SemanticException, SyntaxException {
+    private static double parseEPrime(Lexer lexer, double siblingT) throws Lexer.LexicalException, SyntaxException {
         if (lexer.match(Operator.PLUS,Operator.MINUS)) {
             // E' -> +TE' | -TE'
             Operator operator = lexer.popOperator();
@@ -129,13 +129,13 @@ public abstract class Parser {
         }
     }
 
-    private static  double parseT(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static  double parseT(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         // T -> UT'
         double u = parseU(lexer);
         return parseTPrime(lexer, u);
     }
 
-    private static double parseTPrime(Lexer lexer, double siblingU) throws Lexer.SemanticException, SyntaxException {
+    private static double parseTPrime(Lexer lexer, double siblingU) throws Lexer.LexicalException, SyntaxException {
         if (lexer.match(Operator.MULTIPLY, Operator.DIVIDE, Operator.REMAINDER)) {
             // T' -> *UT' | /*UT' | %UT'
             Operator operator = lexer.popOperator();
@@ -150,7 +150,7 @@ public abstract class Parser {
         }
     }
 
-    private static double parseU(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseU(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         if (lexer.match(Operator.PLUS,Operator.MINUS)) {
             // U -> -F | +F
 
@@ -164,7 +164,7 @@ public abstract class Parser {
         }
     }
 
-    private static double parseF(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseF(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         if (lexer.matchIfNumber()) {
             // F -> double
             return lexer.popNumber();
@@ -175,7 +175,7 @@ public abstract class Parser {
         }
     }
 
-    private static double parseG(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseG(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         if (lexer.match(Operator.PARENTHESES_OPENING)) {
             // G -> (E)
             return parseEParenthesized(lexer);
@@ -199,7 +199,7 @@ public abstract class Parser {
         }
     }
 
-    private static double parseEParenthesized(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseEParenthesized(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         // (E)
         lexer.popOperator(); // skip the opening bracket
         double e = parseE(lexer);
@@ -212,7 +212,7 @@ public abstract class Parser {
         }
     }
 
-    private static double parseS(Lexer lexer) throws Lexer.SemanticException, SyntaxException {
+    private static double parseS(Lexer lexer) throws Lexer.LexicalException, SyntaxException {
         // S -> pow(E,E) | log(E,E)
         Operator operator = lexer.popOperator();
         if (lexer.match(Operator.PARENTHESES_OPENING)) {

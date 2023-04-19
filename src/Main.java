@@ -41,7 +41,7 @@ public class Main {
                     System.out.printf("%.0f\n", result);
                 }
             }
-            catch (Lexer.SemanticException | Parser.SyntaxException e) {
+            catch (Lexer.LexicalException | Parser.SyntaxException e) {
                 System.out.println("!! "+e.getMessage());
             }
         }

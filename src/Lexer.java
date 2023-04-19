@@ -12,7 +12,7 @@ public class Lexer {
     private double tokenNumberValue;
     private Operator tokenOperatorValue;
 
-    public Lexer(String input) throws SemanticException {
+    public Lexer(String input) throws LexicalException {
         scanner = new Scanner(input);
 
         // scanner should split the input into multiple tokens
@@ -45,25 +45,25 @@ public class Lexer {
         return tokenType == TokenType.NUMBER;
     }
 
-    public double popNumber() throws SemanticException {
+    public double popNumber() throws LexicalException {
         double number = tokenNumberValue;
         advance();
         return number;
     }
 
-    public Operator popOperator() throws SemanticException {
+    public Operator popOperator() throws LexicalException {
         Operator operator = tokenOperatorValue;
         advance();
         return operator;
     }
 
-    public static class SemanticException extends Exception {
-        public SemanticException(String operator) {
-            super("Semantic error: unknown operator \""+operator+"\".");
+    public static class LexicalException extends Exception {
+        public LexicalException(String operator) {
+            super("Lexical error: unknown operator \""+operator+"\".");
         }
     }
 
-    private void advance() throws SemanticException {
+    private void advance() throws LexicalException {
         if (scanner.hasNext()) {
             if (scanner.hasNextDouble()) {
                 tokenType = TokenType.NUMBER;
@@ -80,7 +80,7 @@ public class Lexer {
         }
     }
 
-    private Operator getOperator(String input) throws SemanticException {
+    private Operator getOperator(String input) throws LexicalException {
         switch (input) {
             case "+" -> { return Operator.PLUS; }
             case "-" -> { return Operator.MINUS; }
@@ -95,7 +95,7 @@ public class Lexer {
             case "fact" -> { return Operator.FACT; }
             case "pow" -> { return Operator.POW; }
             case "log" -> { return Operator.LOG; }
-            default -> throw new SemanticException(input);
+            default -> throw new LexicalException(input);
         }
     }
 }

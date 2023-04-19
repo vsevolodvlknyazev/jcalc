@@ -23,9 +23,9 @@ public abstract class Parser {
         }
     }
 
-    private static class NumberExpectedException extends SyntaxException {
-        public NumberExpectedException() {
-            super("number expected");
+    private static class NumberOrEquationExpectedException extends SyntaxException {
+        public NumberOrEquationExpectedException() {
+            super("number or equation expected");
         }
     }
 
@@ -169,13 +169,9 @@ public abstract class Parser {
             // F -> double
             return lexer.popNumber();
         }
-        else if (lexer.match(Operator.PARENTHESES_OPENING, Operator.SQRT, Operator.LG, Operator.FACT,
-                Operator.POW, Operator.LOG )) {
+        else {
             // F -> G
             return parseG(lexer);
-        }
-        else {
-            throw new NumberExpectedException();
         }
     }
 
@@ -194,9 +190,12 @@ public abstract class Parser {
                 throw new ParenthesizedEquationExpectedException();
             }
         }
-        else {
+        else if (lexer.match(Operator.POW, Operator.LOG)){
             // G -> S
             return parseS(lexer);
+        }
+        else {
+            throw new NumberOrEquationExpectedException();
         }
     }
 

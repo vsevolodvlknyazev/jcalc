@@ -1,14 +1,14 @@
 /*  Using the recursive decent parser algorithm
     Grammar:
-    E - expression, T - term F - factor, U - Unary expression, G - group, S - super group e - nil
+    E - expression, T - term, F - factor, U - Unary expression, G - group, S - super group, e - nil
 
     E  -> TE'
     E' -> +TE' | -TE' | e
     T  -> UT'
-    T' -> *UT' | /UT' | %T' | e
+    T' -> *UT' | /UT' | %UT' | e
     U  -> -F | +F | F
     F  -> double | G
-    G  -> (E) | sqrt(E) | lg(E) | fact(E) | A
+    G  -> (E) | sqrt(E) | lg(E) | fact(E) | S
     S  -> pow(E,E) | log(E,E)
 */
 

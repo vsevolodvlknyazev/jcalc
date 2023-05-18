@@ -18,7 +18,7 @@ public enum Operator {
     LG,
     FACT,
 
-    // A
+    // S
     POW,
     LOG
 }
